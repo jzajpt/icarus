@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby -wKU
 
+require File.expand_path(File.dirname(__FILE__) + '/ext/hash')
+
 class VerifyIcarus
   attr_accessor :address, :security_token, :username, :password
 
@@ -14,7 +16,7 @@ class VerifyIcarus
     if params_or_nil
       @address, @security_token = params_or_nil
     else
-      file = File.join(File.dirname(__FILE__), "/config/config.yml")
+      file = File.join(File.dirname(__FILE__), "/../config/config.yml")
       config = YAML.load_file(file).deep_symbolize_keys
       @address = "#{config[:icarus][:listen_address]}:#{config[:icarus][:listen_port]}"
       @security_token = config[:icarus][:security_token]
@@ -39,6 +41,7 @@ class VerifyIcarus
       puts " - uptime: #{server.call('system.uptime')}"
       puts "PowerDNS module present: " + check_module(server, 'powerdns').to_s
       puts "Postfix module present: " + check_module(server, 'postfix').to_s
+      puts "Proftpd module present: " + check_module(server, 'proftpd').to_s
     rescue Errno::ECONNREFUSED
       puts "Server on #{address} isn't running! (Connection refused)"
     end

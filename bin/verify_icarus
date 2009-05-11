@@ -3,7 +3,7 @@
 require 'rubygems'
 require 'xmlrpc/client'
 require 'optparse'
-require File.join(File.dirname(__FILE__), '/lib/verify_icarus')
+require File.join(File.dirname(__FILE__), '/../lib/verify_icarus')
 
 if ARGV.size == 0
   verify_icarus = VerifyIcarus.new
