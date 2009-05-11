@@ -9,6 +9,10 @@ require 'ext/hash'
 require 'adapters/mysql_adapter'
 require 'stupid_record/record'
 require 'icarus_config'
+require 'models/apache/directive'
+require 'models/apache/section'
+require 'models/apache/config'
+require 'models/apache/virtual_host'
 require 'models/proftpd/ftp_account'
 require 'models/postfix/domain'
 require 'models/postfix/alias'
@@ -17,6 +21,7 @@ require 'models/powerdns/domain'
 require 'models/powerdns/record'
 require 'models/mysql/database'
 require 'models/mysql/user'
+require 'backends/apache'
 require 'backends/base'
 require 'backends/mysql'
 require 'backends/postfix'
@@ -34,7 +39,7 @@ Spec::Runner.configure do |config|
   end
   
   config.after(:all) do
-    File.delete @config_file if File.exists? @config_file
+    File.delete @icarus_config_file if File.exists? @icarus_config_file
   end
 
   def setup_mysql_connection
@@ -51,7 +56,7 @@ Spec::Runner.configure do |config|
   
   def load_test_configuration
     config_file_template = File.expand_path(File.dirname(__FILE__) + '/../test/config.yml.erb')
-    @config_file = File.expand_path(File.dirname(__FILE__) + '/../test/config.yml')
+    @icarus_config_file = File.expand_path(File.dirname(__FILE__) + '/../test/config.yml')
     
     test_prefix      = '/tmp'
     test_maildirmake = 'true'
@@ -59,8 +64,8 @@ Spec::Runner.configure do |config|
     test_group       = ENV['GROUP']
 
     content = ERB.new(IO.read(config_file_template)).result(binding)
-    File.open(@config_file, "w") { |f| f.puts content }
+    File.open(@icarus_config_file, "w") { |f| f.puts content }
     
-    IcarusConfig.load(@config_file)
+    IcarusConfig.load(@icarus_config_file)
   end
 end
