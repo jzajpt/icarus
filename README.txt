@@ -1,6 +1,6 @@
-= icarus
+= Icarus
 
-* FIX (url)
+* http://github.com/jzajpt/icarus/
 
 == DESCRIPTION:
 
@@ -16,7 +16,12 @@ FIX (describe your package)
 
 == REQUIREMENTS:
 
-* FIX (list of requirements)
+The following Ruby Gems are required to run Icarus:
+
+* mysql
+* simple-daemon
+* sys-admin
+* sys-uptime
 
 == INSTALL:
 
@@ -26,7 +31,7 @@ FIX (describe your package)
 
 (The MIT License)
 
-Copyright (c) 2009 FIX
+Copyright (c) 2009 Jiří Zajpt <jzajpt@blueberryapps.com>
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
