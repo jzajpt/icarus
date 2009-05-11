@@ -1,3 +1,9 @@
+require 'xmlrpc/server'
+require 'logger'
+require 'openssl'
+require 'webrick'
+require 'webrick/https'
+
 require File.expand_path(File.dirname(__FILE__) + '/icarus_config')
 require File.expand_path(File.dirname(__FILE__) + '/ext/icarus_servlet')
 
@@ -12,6 +18,16 @@ class Icarus
     load_ssl_certificates
     setup_webrick
   end
+  
+  # Starts Webrick server
+  def start
+    @server.start
+  end
+  
+  # Stops Webrick server
+  def stop
+    @server.shutdown
+  end
 
   protected
 
@@ -22,22 +38,27 @@ class Icarus
     @xmlrpc_servlet.password = IcarusConfig[:icarus][:password]
 
     if IcarusConfig[:icarus][:backends].include?('system')
+      require File.expand_path(File.dirname(__FILE__) + '/backends/system')
       @xmlrpc_servlet.add_handler(XMLRPC::iPIMethods('system'), Backends::System.new)  
     end
 
     if IcarusConfig[:icarus][:backends].include?('powerdns')
+      require File.expand_path(File.dirname(__FILE__) + '/backends/powerdns')
       @xmlrpc_servlet.add_handler(XMLRPC::iPIMethods('powerdns'), Backends::PowerDns.new)  
     end
 
     if IcarusConfig[:icarus][:backends].include?('postfix')
+      require File.expand_path(File.dirname(__FILE__) + '/backends/postfix')
       @xmlrpc_servlet.add_handler(XMLRPC::iPIMethods('postfix'), Backends::Postfix.new)  
     end
 
     if IcarusConfig[:icarus][:backends].include?('proftpd')
+      require File.expand_path(File.dirname(__FILE__) + '/backends/proftpd')
       @xmlrpc_servlet.add_handler(XMLRPC::iPIMethods('proftpd'), Backends::Proftpd.new)  
     end
 
     if IcarusConfig[:icarus][:backends].include?('mysql')
+      require File.expand_path(File.dirname(__FILE__) + '/backends/mysql')
       @xmlrpc_servlet.add_handler(XMLRPC::iPIMethods('mysql'), Backends::Mysql.new)  
     end
 
@@ -49,10 +70,8 @@ class Icarus
 
   # Loads necessary SSL certficates.
   def load_ssl_certificates
-    private_key_file = File.expand_path(File.dirname('/../config') +
-      IcarusConfig[:icarus][:ssl_private_key])
-    certificate_file = File.expand_path(File.dirname('/../config') +
-      IcarusConfig[:icarus][:ssl_certificate])
+    private_key_file = File.join('../config', IcarusConfig[:icarus][:ssl_private_key])
+    certificate_file = File.join('../config', IcarusConfig[:icarus][:ssl_certificate])
     @ssl_private_key = OpenSSL::PKey::RSA.new(File.open(private_key_file).read)
     @ssl_certificate = OpenSSL::X509::Certificate.new(File.open(certificate_file).read)
   end

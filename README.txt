@@ -22,6 +22,7 @@ The following Ruby Gems are required to run Icarus:
 * simple-daemon
 * sys-admin
 * sys-uptime
+* openssl
 
 == INSTALL:
 
