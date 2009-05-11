@@ -1,0 +1,7 @@
+History.txt
+Manifest.txt
+README.txt
+Rakefile
+bin/icarus
+lib/icarus.rb
+test/test_icarus.rb

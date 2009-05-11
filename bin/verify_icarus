@@ -1,0 +1,17 @@
+#!/usr/bin/env ruby -wKU
+
+require 'rubygems'
+require 'xmlrpc/client'
+require 'optparse'
+require File.join(File.dirname(__FILE__), '/lib/verify_icarus')
+
+if ARGV.size == 0
+  verify_icarus = VerifyIcarus.new
+elsif ARGV.size == 2
+  verify_icarus = VerifyIcarus.new(ARGV)
+else
+  VerifyIcarus.usage
+  exit
+end
+
+verify_icarus.verify

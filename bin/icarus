@@ -1,0 +1,24 @@
+#!/usr/bin/env ruby -wKU
+
+require 'rubygems'
+require 'simple-daemon'
+require File.expand_path(File.dirname(__FILE__) + '/../lib/icarus')
+
+class IcarusDaemon < SimpleDaemon::Base
+  SimpleDaemon::WORKING_DIRECTORY = File.expand_path(File.dirname(__FILE__) + '/../log')
+
+  class << self
+    def start
+      puts "Staring Icarus daemon..."
+      @icarus = Icarus.new
+      @icarus.start
+    end
+
+    def stop
+      puts "Stopping Icarus daemon..."
+      @icarus.stop
+    end
+  end
+end
+
+IcarusDaemon.daemonize

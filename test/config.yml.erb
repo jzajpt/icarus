@@ -1,0 +1,18 @@
+icarus:
+  listen_address:     localhost
+  listen_port:        59998
+  security_token:     abcdefghijklmn1234567890
+  username:           daedalus
+  password:           sosecretpassword1234567890
+  ssl_private_key:    private.key
+  ssl_certificate:    server.crt
+  backends:           [system, powerdns, postfix, proftpd, mysql]
+
+postfix:
+  prefix:      <%= test_prefix %>
+  maildirmake: <%= test_maildirmake %>
+  user:        <%= test_user %>
+  group:       <%= test_group %>
+
+proftpd:
+  path:        '/home/hosting/:domain/web/:subdomain'
