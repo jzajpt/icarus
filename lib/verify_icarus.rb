@@ -39,9 +39,11 @@ class VerifyIcarus
       puts "System module present: " + check_module(server, 'system').to_s
       puts " - uname:  #{server.call('system.uname')}"
       puts " - uptime: #{server.call('system.uptime')}"
-      puts "PowerDNS module present: " + check_module(server, 'powerdns').to_s
-      puts "Postfix module present: " + check_module(server, 'postfix').to_s
-      puts "Proftpd module present: " + check_module(server, 'proftpd').to_s
+      check_module(server, 'apache')
+      check_module(server, 'mysql')
+      check_module(server, 'powerdns')
+      check_module(server, 'postfix')
+      check_module(server, 'proftpd')
     rescue Errno::ECONNREFUSED
       puts "Server on #{address} isn't running! (Connection refused)"
     end
@@ -65,12 +67,18 @@ class VerifyIcarus
       puts " - subject: " + http.peer_cert.subject.to_s
     }
   end
-
-  def check_module(server, name)
+  
+  def module_present?(server, name)
     begin
       server.call("#{name}.present?")
     rescue XMLRPC::FaultException
       false
-    end
+    end    
+  end
+
+  def check_module(server, name)
+    state = module_present?(server, name) ? 'YES' : "NO"
+    puts "Module #{name}: #{state}"
+    
   end
 end

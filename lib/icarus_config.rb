@@ -10,14 +10,22 @@ class IcarusConfig
 
     def load(filename)
       @config = YAML.load_file(filename).deep_symbolize_keys
-
+      @config_file = filename
       check_icarus_config
       check_postfix_config
       check_proftpd_config    
     end
+    
+    def loaded?
+      !!@config && !!@config_file
+    end
 
     def [](key)
       @config[key]
+    end
+    
+    def server_uri
+      "https://#{@config[:icarus][:listen_address]}:#{@config[:icarus][:listen_port]}/icarus/#{@config[:icarus][:security_token]}"
     end
 
     protected

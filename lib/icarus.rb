@@ -6,7 +6,7 @@ require 'webrick/https'
 
 require File.expand_path(File.dirname(__FILE__) + '/icarus_config')
 require File.expand_path(File.dirname(__FILE__) + '/ext/icarus_servlet')
-
+require File.expand_path(File.dirname(__FILE__) + '/adapters/mysql_adapter')
 
 class Icarus
   VERSION = '1.0.0'
@@ -15,6 +15,8 @@ class Icarus
     IcarusConfig.load(config_file ||
       File.expand_path(File.dirname(__FILE__) + '/../config/config.yml'))
     setup_servlet
+    setup_mysql_connection
+    load_icarus_modules
     load_ssl_certificates
     setup_webrick
   end
@@ -30,12 +32,34 @@ class Icarus
   end
 
   protected
+  
+  def setup_mysql_connection
+    MysqlAdapter.connect(IcarusConfig[:mysql_adapter])
+  end
 
   # Setups XMLRPC servlet for Webrick
   def setup_servlet
     @xmlrpc_servlet = IcarusServlet.new
     @xmlrpc_servlet.username = IcarusConfig[:icarus][:username]
     @xmlrpc_servlet.password = IcarusConfig[:icarus][:password]
+    
+    # Add Icarus version handler
+    @xmlrpc_servlet.add_handler('icarus.version') do
+      VERSION
+    end
+  end
+  
+  # Loads all necessary Icarus modules
+  def load_icarus_modules
+    if IcarusConfig[:icarus][:backends].include?('apache')
+      require File.expand_path(File.dirname(__FILE__) + '/backends/apache')
+      @xmlrpc_servlet.add_handler(XMLRPC::iPIMethods('apache'), Backends::Apache.new)  
+    end
+    
+    if IcarusConfig[:icarus][:backends].include?('mysql')
+      require File.expand_path(File.dirname(__FILE__) + '/backends/mysql')
+      @xmlrpc_servlet.add_handler(XMLRPC::iPIMethods('mysql'), Backends::Mysql.new)  
+    end
 
     if IcarusConfig[:icarus][:backends].include?('system')
       require File.expand_path(File.dirname(__FILE__) + '/backends/system')
@@ -56,22 +80,12 @@ class Icarus
       require File.expand_path(File.dirname(__FILE__) + '/backends/proftpd')
       @xmlrpc_servlet.add_handler(XMLRPC::iPIMethods('proftpd'), Backends::Proftpd.new)  
     end
-
-    if IcarusConfig[:icarus][:backends].include?('mysql')
-      require File.expand_path(File.dirname(__FILE__) + '/backends/mysql')
-      @xmlrpc_servlet.add_handler(XMLRPC::iPIMethods('mysql'), Backends::Mysql.new)  
-    end
-
-    # Add Icarus version handler
-    @xmlrpc_servlet.add_handler('icarus.version') do
-      VERSION
-    end
   end
 
   # Loads necessary SSL certficates.
   def load_ssl_certificates
-    private_key_file = File.join('../config', IcarusConfig[:icarus][:ssl_private_key])
-    certificate_file = File.join('../config', IcarusConfig[:icarus][:ssl_certificate])
+    private_key_file = File.expand_path(File.dirname(__FILE__) + '/../config/' + IcarusConfig[:icarus][:ssl_private_key])
+    certificate_file = File.expand_path(File.dirname(__FILE__) + '/../config/' + IcarusConfig[:icarus][:ssl_certificate])
     @ssl_private_key = OpenSSL::PKey::RSA.new(File.open(private_key_file).read)
     @ssl_certificate = OpenSSL::X509::Certificate.new(File.open(certificate_file).read)
   end
