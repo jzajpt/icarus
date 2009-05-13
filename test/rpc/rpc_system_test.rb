@@ -7,7 +7,7 @@ class XmlRpc_SystemBackendTest < Test::Unit::TestCase
   
   def test_present?
     result = @server.call('system.present?')
-    assert result
+    assert_equal true, result
   end
   
   def test_name
@@ -38,16 +38,16 @@ class XmlRpc_SystemBackendTest < Test::Unit::TestCase
   
   def test_user_exists
     result = @server.call('system.user_exists?', 'bogus-username')
-    assert !result
+    assert_equal false, result
   end
   
   def test_user_exists_with_invalid_arguments
     result = @server.call('system.user_exists?', { :hash => 'yeah' })
-    assert !result
+    assert_equal false, result
   end
   
   def test_user_exists
     result = @server.call('system.group_exists?', 'bogus-group')
-    assert !result
+    assert_equal false, result
   end
 end
