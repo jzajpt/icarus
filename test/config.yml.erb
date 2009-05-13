@@ -6,7 +6,13 @@ icarus:
   password:           sosecretpassword1234567890
   ssl_private_key:    private.key
   ssl_certificate:    server.crt
-  backends:           [system, powerdns, postfix, proftpd, mysql]
+  backends:           [system, powerdns, postfix, proftpd, mysql, apache]
+
+apache:
+  prefix:             <%= test_prefix %>
+  apache_script:      /etc/init.d/apache2
+  apache_config_path: <%= test_prefix %>
+  use_mod_itk:        true
 
 postfix:
   prefix:      <%= test_prefix %>

@@ -6,13 +6,29 @@ icarus:
   password:           sosecretpassword1234567890
   ssl_private_key:    private.key
   ssl_certificate:    server.crt
-  backends:           [system, powerdns, postfix, proftpd]
+  backends:           [system, powerdns, postfix, proftpd, apache, mysql]
 
+# Mysql configuration
+mysql_adapter:
+  host:               localhost
+  user:               root
+  password:           
+  database:           hosting
+
+# Apache backend configuration
+apache:
+  prefix:             /home/hosting
+  apache_script:      /etc/init.d/apache2
+  apache_config_path: /etc/apache2/vhosts.d
+  use_mod_itk:        true
+
+# Postfix backend configuration
 postfix:
   prefix:      /home/virtual
   maildirmake: /usr/bin/maildirmake
   user:        virtual
   group:       virtual
 
+# Proftpd backend configuration
 proftpd:
   path:        '/home/hosting/:domain/web/:subdomain'
