@@ -1,0 +1,25 @@
+<VirtualHost *:80>
+  ServerName <%= attributes[:server_name] %>
+<% if attributes[:server_aliases] %>  ServerAlias <%= attributes[:server_aliases].join(' ') %><% end %>
+ 
+  DocumentRoot <%= attributes[:document_root] %>
+  <Directory "<%= attributes[:document_root] %>">
+    Options FollowSymLinks
+    AllowOverride All
+    Order allow,deny
+    Allow from all
+  </Directory>
+ 
+  ErrorLog <%= attributes[:error_log] %>
+  CustomLog <%= attributes[:access_log] %> combined
+
+<% if attributes[:assign_user_id]%>  AssignUserId <%= attributes[:assign_user_id] %> <%= attributes[:assign_user_id] %><% end %>
+<% if attributes[:php_open_basedir]%>  php_admin_value open_basedir "<%= attributes[:php_open_basedir] %>:/tmp"<% end %>
+<% if attributes[:php_safe_mode] %>  php_admin_flag safe_mode on<% end %>
+<% if attributes[:error_pages] %>
+  <% if attributes[:error_pages][401] %>ErrorDocument 401 <%= attributes[:error_pages][401] %><% end %>
+  <% if attributes[:error_pages][403] %>ErrorDocument 401 <%= attributes[:error_pages][403] %><% end %>
+  <% if attributes[:error_pages][404] %>ErrorDocument 401 <%= attributes[:error_pages][404] %><% end %>
+  <% if attributes[:error_pages][500] %>ErrorDocument 401 <%= attributes[:error_pages][500] %><% end %>
+<% end %>
+</VirtualHost>
