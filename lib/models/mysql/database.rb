@@ -3,7 +3,7 @@
 # Copyright:: Copyright (c) 2009 Jiri Zajpt
 #
 
-require File.expand_path(File.dirname(__FILE__) + '/../../stupid_record/record')
+require File.expand_path(File.dirname(__FILE__) + '/../../adapters/mysql_adapter')
 require File.expand_path(File.dirname(__FILE__) + '/user')
 
 
